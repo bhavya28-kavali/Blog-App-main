@@ -41,12 +41,11 @@ const connectDB = async () => {
         await connect(process.env.DB_URL)
         console.log("DB connection success")
 
-        // Local server only
-        if (process.env.NODE_ENV !== "production") {
-            app.listen(process.env.PORT, () =>
-                console.log(`server started in port ${process.env.PORT}`)
-            )
-        }
+        const PORT = process.env.PORT || 4000
+
+        app.listen(PORT, () => {
+            console.log(`Server started on port ${PORT}`)
+        })
 
     } catch (err) {
         console.log("Err in DB connection", err)
