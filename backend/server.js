@@ -30,12 +30,18 @@ app.use('/author-api', authorRoute)
 app.use('/admin-api', adminRoute)
 app.use('/common-api', commonRouter)
 
+// Home Route
+app.get('/', (req, res) => {
+    res.send("Backend is running successfully")
+})
+
 // Connect to Database
 const connectDB = async () => {
     try {
         await connect(process.env.DB_URL)
         console.log("DB connection success")
 
+        // Local server only
         if (process.env.NODE_ENV !== "production") {
             app.listen(process.env.PORT, () =>
                 console.log(`server started in port ${process.env.PORT}`)
@@ -51,7 +57,9 @@ connectDB()
 
 // dealing with invalid paths
 app.use((req, res, next) => {
-    res.json({ message: "Invalid path" });
+    res.status(404).json({
+        message: "Invalid path"
+    });
 })
 
 // error handling middleware
