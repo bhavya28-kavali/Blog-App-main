@@ -1,5 +1,5 @@
 import express from 'express'
-import { connect } from 'mongoose'
+import mongoose from 'mongoose'
 import { config } from 'dotenv'
 import { userRoute } from './APIs/userAPI.js'
 import { authorRoute } from './APIs/authorAPI.js'
@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser'
 import { commonRouter } from './APIs/commonAPI.js'
 import cors from 'cors'
 
-config() // process .env
+config()
 
 const app = express()
 
@@ -20,92 +20,93 @@ app.use(cors({
     credentials: true
 }))
 
-// Add body parser middleware
 app.use(express.json())
 app.use(cookieParser())
 
-// connect APIs
+// API routes
 app.use('/user-api', userRoute)
 app.use('/author-api', authorRoute)
 app.use('/admin-api', adminRoute)
 app.use('/common-api', commonRouter)
 
-// Home Route
+// Home route
 app.get('/', (req, res) => {
     res.send("Backend is running successfully")
 })
 
-// Connect to Database
+// MongoDB Connection
 const connectDB = async () => {
     try {
-        await connect(process.env.DB_URL)
-        console.log("DB connection success")
+
+        await mongoose.connect(process.env.MONGO_URI)
+
+        console.log("MongoDB Connected Successfully")
 
         const PORT = process.env.PORT || 4000
 
         app.listen(PORT, () => {
-            console.log(`Server started on port ${PORT}`)
+            console.log(`Server running on port ${PORT}`)
         })
 
     } catch (err) {
+
         console.log("Err in DB connection", err)
+
+        process.exit(1)
     }
 }
 
 connectDB()
 
-// dealing with invalid paths
+// Invalid path handler
 app.use((req, res, next) => {
     res.status(404).json({
         message: "Invalid path"
-    });
+    })
 })
 
-// error handling middleware
+// Error handling middleware
 app.use((err, req, res, next) => {
 
-    // mongoose validation error
     if (err.name === "ValidationError") {
         return res.status(400).json({
             message: "error occurred",
             error: err.message,
-        });
+        })
     }
 
-    // mongoose cast error
     if (err.name === "CastError") {
         return res.status(400).json({
             message: "error occurred",
             error: err.message,
-        });
+        })
     }
 
-    const errCode = err.code ?? err.cause?.code ?? err.errorResponse?.code;
-    const keyValue = err.keyValue ?? err.cause?.keyValue ?? err.errorResponse?.keyValue;
+    const errCode = err.code ?? err.cause?.code ?? err.errorResponse?.code
+    const keyValue = err.keyValue ?? err.cause?.keyValue ?? err.errorResponse?.keyValue
 
     if (errCode === 11000) {
-        const field = Object.keys(keyValue)[0];
-        const value = keyValue[field];
+
+        const field = Object.keys(keyValue)[0]
+        const value = keyValue[field]
 
         return res.status(409).json({
             message: "error occurred",
             error: `${field} "${value}" already exists`,
-        });
+        })
     }
 
-    // handle custom errors
     if (err.status) {
         return res.status(err.status).json({
             message: "error occurred",
             error: err.message,
-        });
+        })
     }
 
-    // default server error
     res.status(500).json({
         message: "error occurred",
         error: "Server side error",
-    });
+    })
 })
 
 export default app
