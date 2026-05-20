@@ -15,8 +15,9 @@ const app = express()
 app.use(cors({
     origin: [
         'http://localhost:5173',
-        'https://your-frontend.vercel.app'
+        'https://blog-app-main-delta.vercel.app'
     ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }))
 
