@@ -57,14 +57,11 @@ userRoute.get("/articles",verifyToken("USER"),async (req,res)=>{
 // Add comments to an article
 userRoute.put("/articles",verifyToken("USER"),async (req,res)=>{
     //get modified article from req
-    const {articleId,user,comment} = req.body
-    // check user
-    if (req.user.userId!==user){
-        return res.status(403).json({message:"Forbidden."})
-    }
+    const {articleId, comment} = req.body
+    const userId = req.user.userId
     //find article by id and update
     let updatedArticle = await ArticleModel.findOneAndUpdate({_id:articleId,isArticleActive:true},
-        {$push:{comments:{user,comment}}},{new:true,runValidators:true}
+        {$push:{comments:{user:userId,comment}}},{new:true,runValidators:true}
     ).populate("comments.user", "firstName profileImageUrl")
     //if article not found
     if (!updatedArticle){

@@ -50,6 +50,8 @@ authorRoute.post("/users",upload.single("profileImageUrl"),async (req, res, next
 authorRoute.post("/articles",verifyToken("AUTHOR"),async (req,res)=>{
     //get article form req
     const articleObj = req.body
+    // ensure author comes from token
+    articleObj.author = req.user.userId
     //create article document
     const articleDoc = new ArticleModel(articleObj)
 
@@ -64,6 +66,10 @@ authorRoute.post("/articles",verifyToken("AUTHOR"),async (req,res)=>{
 authorRoute.get("/articles/:authorId",verifyToken("AUTHOR"),async (req,res)=>{
     //get author by id
     let authorId = req.params.authorId
+    // Authors may only fetch their own articles
+    if (req.user.role === 'AUTHOR' && req.user.userId !== authorId) {
+        return res.status(403).json({ message: 'Forbidden' })
+    }
     //read articles by this author
     let articles = await ArticleModel.find({author:authorId}).populate("author","firstName email")
     //send res
@@ -75,7 +81,7 @@ authorRoute.put("/articles",verifyToken("AUTHOR"),async (req,res)=>{
     //get modified article from req
     let {articleId,title,content,category} = req.body
     //find article
-    let articleOfDB = await ArticleModel.findOne({_id:articleId,author:req.body.author})
+    let articleOfDB = await ArticleModel.findOne({_id:articleId, author: req.user.userId})
     if (!articleOfDB){
         res.status(404).json({message:"article not found"})
     }

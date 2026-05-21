@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { useAuth } from "../stores/authStore";
 import axios from "axios";
+import { API_BASE } from "../config/api";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 
@@ -27,7 +28,7 @@ function ArticleById() {
     async function fetchArticle() {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/common-api/articles/${id}`,
+          `${API_BASE}/common-api/articles/${id}`,
           { withCredentials: true }
         );
         setArticle(res.data.payload);
@@ -46,7 +47,7 @@ function ArticleById() {
     setCommentLoading(true);
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_API_URL}/user-api/articles`,
+        `${API_BASE}/user-api/articles`,
         {
           articleId: id,
           user: currentUser._id,

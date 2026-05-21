@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useParams, useNavigate } from "react-router";
 import { useAuth } from "../stores/authStore";
 import axios from "axios";
+import { API_BASE } from "../config/api";
 import { toast } from "react-hot-toast";
 import { errorClass, loadingClass } from "../styles/common.js";
 
@@ -26,7 +27,7 @@ export default function EditArticle() {
     const fetchArticle = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/common-api/articles/${id}`,
+          `${API_BASE}/common-api/articles/${id}`,
           { withCredentials: true }
         );
         const article = res.data.payload;
@@ -58,7 +59,7 @@ export default function EditArticle() {
       };
 
       await axios.put(
-        `${import.meta.env.VITE_API_URL}/author-api/articles`,
+        `${API_BASE}/author-api/articles`,
         updateObj,
         { withCredentials: true }
       );

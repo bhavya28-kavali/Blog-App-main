@@ -51,31 +51,30 @@ commonRouter.use('/logout',(req,res)=>{
 
 
 //change the password
-commonRouter.put('/change-password', verifyToken, async(req, res)=>{
-    //get details from req
-    let { _id, oldPassword, newPassword } = req.body;
+commonRouter.put('/change-password', verifyToken, async (req, res) => {
+    // use user id from verified token
+    const userId = req.user?.userId
+    const { oldPassword, newPassword } = req.body
 
-    //check for the correct password
-    const user = await UserTypeModel.findById(_id);
-    let match = await bcrypt.compare(oldPassword, user.password);
-    if(!match) {
-        return res.status(403).json({ message: "Invalid password" });
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' })
+
+    const user = await UserTypeModel.findById(userId)
+    if (!user) return res.status(404).json({ message: 'User not found' })
+
+    const match = await bcrypt.compare(oldPassword, user.password)
+    if (!match) {
+        return res.status(403).json({ message: 'Invalid password' })
     }
 
-    //check if the passwords are same
-    if(oldPassword === newPassword) {
-        res.status(403).json({ message: "User cannot enter same password again" });
+    if (oldPassword === newPassword) {
+        return res.status(400).json({ message: 'New password must be different from the old password' })
     }
 
-    //replace the current password with the new password
-    user.password = await bcrypt.hash(newPassword, 10);
-    user.save();
+    user.password = await bcrypt.hash(newPassword, 12)
+    await user.save()
 
-    //temporary statement just for checking purpose
-    let temp = await bcrypt.compare(newPassword, user.password);
-
-    //send response
-    res.status(200).json({ message: "Password changed successfully", payload: temp });
+    // send response without leaking internal values
+    res.status(200).json({ message: 'Password changed successfully' })
 })
 
 // verify the session

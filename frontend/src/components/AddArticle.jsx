@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { useAuth } from "../stores/authStore";
 import axios from "axios";
+import { API_BASE } from "../config/api";
 import { toast } from "react-hot-toast";
 import { errorClass, loadingClass } from "../styles/common.js";
 
@@ -25,7 +26,7 @@ export default function AddArticle() {
       // Attach author ID from the logged-in user
       const articleObj = { ...data, author: currentUser._id };
       let res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/author-api/articles`,
+        `${API_BASE}/author-api/articles`,
         articleObj,
         { withCredentials: true }
       );

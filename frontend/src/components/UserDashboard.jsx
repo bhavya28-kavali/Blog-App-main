@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { useAuth } from "../stores/authStore";
 import axios from "axios";
+import { API_BASE } from "../config/api";
 import { toast } from "react-hot-toast";
 
 function UserDashboard() {
@@ -22,7 +23,7 @@ function UserDashboard() {
       try {
 
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/user-api/articles`,
+          `${API_BASE}/user-api/articles`,
           { withCredentials: true }
         );
 

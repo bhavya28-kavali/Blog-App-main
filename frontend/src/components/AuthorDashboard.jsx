@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { NavLink,useNavigate } from 'react-router'
 import { useAuth } from "../stores/authStore";
+import { API_BASE } from "../config/api";
 import { toast } from 'react-hot-toast';
 import axios from 'axios'
 
@@ -16,7 +17,7 @@ function AuthorDashboard() {
     setLoading(true)
     async function getData(){
       try {
-        let res = await axios.get(`${import.meta.env.VITE_API_URL}/author-api/articles/${currentUser._id}`,{withCredentials:true})
+        let res = await axios.get(`${API_BASE}/author-api/articles/${currentUser._id}`,{withCredentials:true})
         let articleObj=res.data.payload
         setArticles([...articleObj])
       } catch (err) {
@@ -37,7 +38,7 @@ function AuthorDashboard() {
   const deleteArticle = async (articleId) => {
     try {
       const res = await axios.delete(
-        `${import.meta.env.VITE_API_URL}/author-api/articles/authorId/${currentUser._id}/articleId/${articleId}`,
+        `${API_BASE}/author-api/articles/authorId/${currentUser._id}/articleId/${articleId}`,
         { withCredentials: true }
       );
       toast.success("Article deleted (soft)!");
@@ -50,7 +51,7 @@ function AuthorDashboard() {
   const restoreArticle = async (articleId) => {
     try {
       const res = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/author-api/articles/authorId/${currentUser._id}/articleId/${articleId}`,
+        `${API_BASE}/author-api/articles/authorId/${currentUser._id}/articleId/${articleId}`,
         {},
         { withCredentials: true }
       );

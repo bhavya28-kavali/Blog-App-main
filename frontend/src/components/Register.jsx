@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { NavLink,useNavigate } from "react-router";
 import axios from 'axios'
+import { API_BASE } from '../config/api'
 import {errorClass, loadingClass} from '../styles/common.js'
 
 
@@ -27,9 +28,9 @@ export default function Register() {
     // add profilePic to Formdata object
     formData.append("profileImageUrl", profileImageUrl[0]);
     try {
-      if (role === "USER"){
+        if (role === "USER"){
         // make request to user-api
-        let resObj = await axios.post(`${import.meta.env.VITE_API_URL}/user-api/users`,formData)
+        let resObj = await axios.post(`${API_BASE}/user-api/users`,formData)
         let res = resObj.data;
         navigate('/login')
       }
@@ -37,7 +38,7 @@ export default function Register() {
         // make request to author-api
         let {role,...userObj} = newUser;
         // make request to user-api
-        let resObj = await axios.post(`${import.meta.env.VITE_API_URL}/author-api/users`,formData)
+        let resObj = await axios.post(`${API_BASE}/author-api/users`,formData)
         let res = resObj.data;
         navigate('/login')
       }

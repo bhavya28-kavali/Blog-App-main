@@ -18,36 +18,28 @@ adminRoute.get('/articles', verifyToken, async(req, res)=>{
 //Block User
 adminRoute.put('/block-user', verifyToken, checkAdmin, async(req, res)=>{
     //get details of the user form req
-    let{ userId, adminId } = req.body;
-    //verify admin
-    let admin = await UserTypeModel.findById(adminId);
-    if(!admin) {
-        return res.status(403).json({ message: "User not found" });
-    }
+    let{ userId } = req.body;
 
     //update the user 
     let updatedUser = await UserTypeModel.findByIdAndUpdate(userId, { $set: { isActive: false } }, { new: true });
-    delete updatedUser.password
+    const out = updatedUser ? updatedUser.toObject() : null
+    if (out) delete out.password
 
     //send response
-    res.status(200).json({ message: "User blocked successfully", payload: updatedUser });
+    res.status(200).json({ message: "User blocked successfully", payload: out });
 })
 
 
 //Unblock user
 adminRoute.put('/unblock-user', verifyToken, checkAdmin, async(req, res)=>{
     //get details of the user form req
-    let{ userId, adminId } = req.body;
-    //verify admin
-    let admin = await UserTypeModel.findById(adminId);
-    if(!admin) {
-        return res.status(403).json({ message: "User not found" });
-    }
+    let{ userId } = req.body;
 
     //update the user 
     let updatedUser = await UserTypeModel.findByIdAndUpdate(userId, { $set: { isActive: true } }, { new: true });
-    delete updatedUser.password
+    const out = updatedUser ? updatedUser.toObject() : null
+    if (out) delete out.password
 
     //send response
-    res.status(200).json({ message: "User unblocked successfully", payload: updatedUser });
+    res.status(200).json({ message: "User unblocked successfully", payload: out });
 })

@@ -1,9 +1,11 @@
 import { create } from 'zustand'
 import axios from 'axios'
+import { API_BASE } from '../config/api'
+import { logError } from '../utils/logger'
 
 export const useAuth = create((set)=>({
     currentUser:null,
-    loading:false,
+    loading:true,
     isAuthenticated :false,
     error:null,
     verifyAuth: async () =>{
@@ -11,7 +13,7 @@ export const useAuth = create((set)=>({
             //set loading true and error null
             set({loading:true,error:null})
             //make api call
-            let res = await axios.get(`${import.meta.env.VITE_API_URL}/common-api/check-auth`,{withCredentials:true})
+            let res = await axios.get(`${API_BASE}/common-api/check-auth`,{withCredentials:true})
             res=res.data
             // console.log(res)
             set({
@@ -22,7 +24,7 @@ export const useAuth = create((set)=>({
             });
 
           } catch (err) {
-            console.log(err)
+            logError(err)
             set({
                 loading:false,
                 isAuthenticated:false,
@@ -37,7 +39,7 @@ export const useAuth = create((set)=>({
             //set loading true and error null
             set({loading:true,error:null})
             //make api call
-            let res = await axios.post(`${import.meta.env.VITE_API_URL}/common-api/login`,userCredObj,{withCredentials:true})
+            let res = await axios.post(`${API_BASE}/common-api/login`,userCredObj,{withCredentials:true})
             res=res.data
             // console.log(res)
             //update state
@@ -49,7 +51,7 @@ export const useAuth = create((set)=>({
             });
 
         } catch (err) {
-            console.log(err)
+            logError(err)
             set({
                 loading:false,
                 isAuthenticated:false,
@@ -61,9 +63,9 @@ export const useAuth = create((set)=>({
     logout :async ()=>{
       try {
         set({loading:true,error:null})
-        let res =await axios.get(`${import.meta.env.VITE_API_URL}/common-api/logout`,{withCredentials:true})
+        let res =await axios.get(`${API_BASE}/common-api/logout`,{withCredentials:true})
         res=res.data
-        // console.log(res)
+        // success
         set({
             loading:false,
             isAuthenticated:false,
@@ -71,7 +73,7 @@ export const useAuth = create((set)=>({
         });
       } 
 			catch (err) {
-				// console.log(err)
+        logError(err)
             set({
               loading:false,
               isAuthenticated:false,
